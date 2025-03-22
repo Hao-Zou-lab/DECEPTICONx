@@ -32,7 +32,6 @@ install.packages("DECEPTICON_1.0.0.4.tar.gz", repos = NULL, type = "source")
 ```
 
 # Install DECEPTICONx
--
 ```R
 install.packages("DECEPTICONx_1.0.0.0.tar.gz", repos = NULL, type = "source")
 ```
@@ -42,7 +41,6 @@ install.packages("DECEPTICONx_1.0.0.0.tar.gz", repos = NULL, type = "source")
 ![image](https://github.com/Hao-Zou-lab/DECEPTICONx/blob/main/Preparatory_Work.png)
 
 # Run DECEPTICONx
--
 ```R
 library(DECEPTICONx)
 ```
