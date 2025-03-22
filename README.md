@@ -39,6 +39,8 @@ install.packages("DECEPTICONx_1.0.0.0.tar.gz", repos = NULL, type = "source")
 
 # Preparatory Work
 
+![image](https://github.com/Hao-Zou-lab/DECEPTICONx/blob/main/Preparatory_Work.png)
+
 # Run DECEPTICONx
 -
 ```R
