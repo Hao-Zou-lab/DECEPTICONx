@@ -27,7 +27,7 @@ BiocManager::install(c('BiocGenerics', 'DelayedArray', 'DelayedMatrixStats',
                        'terra', 'ggrastr'))
 devtools::install_github('cole-trapnell-lab/monocle3')
 
-#DECEPTICON (DECEPTICON installation package is downloaded from website https://r-forge.r-project.org/scm/viewvc.php/pkg/?root=batman.)
+#DECEPTICON (DECEPTICON installation package is downloaded from website https://github.com/Hao-Zou-lab/DECEPTICON)
 install.packages("DECEPTICON_1.0.0.4.tar.gz", repos = NULL, type = "source")
 ```
 
