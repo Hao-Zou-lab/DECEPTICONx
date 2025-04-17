@@ -54,7 +54,9 @@ run_DECEPTICONx <- function (bulk.samples,sc.dat,subtype,RUNpath, light = TRUE, 
 
 `custom.template` set TRUE for custom signature matrix.
 
-`cell_types` can enter in "nk", "b", "cd4", "cd8", "fibroblast", five kinds of macrophage cell types
+`cell_types` can enter in "nk", "b", "cd4", "cd8", "fibroblast", "macrophage", six kinds of cell types.
+
+`signature_matrix` folder contains reference templates for gene expression in the deconvolution of six major cell categories.
 
 Example:
 ```R
