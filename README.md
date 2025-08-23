@@ -15,8 +15,16 @@ BiocManager::install("SingleCellExperiment")
 devtools::install_github('xuranw/MuSiC')
 
 #MuSiC2
-library("devtools")
-devtools::install_github('xuranw/MuSiC')
+# install devtools if necessary
+if (!"devtools" %in% rownames(installed.packages())) {
+  install.packages('devtools')
+}
+# install the MuSiC2 package
+if (!"MuSiC2" %in% rownames(installed.packages())) {
+  devtools::install_github('Jiaxin-Fan/MuSiC2')
+}
+# load
+library(MuSiC2)
 
 #monocle3 (Detailed installation tutorials for monocle3 are available at https://cole-trapnell-lab.github.io/monocle3/)
 if (!requireNamespace("BiocManager", quietly = TRUE))
@@ -47,7 +55,7 @@ library(DECEPTICONx)
 ```
 bulk samples (m * n matrix with m genes and n samples) and single-cell sequencing data (sc.dat, m * n matrix with m genes and n cells) were input to make the expression template required for deconvolution (i * k matrix with i genes and k cell types).
 
-`subtype` is an n*2 matrix, the first column is the cell name of sc.dat, and the second column is the cell subtype
+`subtype` is an n*2 matrix, the first column is the cell name of sc.dat (rownames), and the second column is the cell subtype
 
 run_DECEPTICONx <- function (bulk.samples,sc.dat,subtype,RUNpath, light = TRUE, custom.template = TRUE)
 
