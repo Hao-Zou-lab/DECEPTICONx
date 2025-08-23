@@ -22,11 +22,13 @@ run_DECEPTICONx(
 
 \item{sc.dat}{is a matrix with rows for gene names and columns for cell names}
 
-\item{subtype}{is an n*2 matrix, the first column is the cell name of sc.dat, and the second column is the cell subtype}
+\item{subtype}{is an n*1 matrix, the rowname is the cell name of sc.dat, and the first column is the cell subtype}
 
-\item{cell_types}{can enter in nk, b, cd4, cd8, fibroblast, five kinds of macrophage cell types}
+\item{cell_types}{can enter in nk, b, cd4, cd8, fibroblast, macrophage, six kinds of cell types}
 
 \item{light}{set TRUE for light version of DECEPTICON, running time reduced.}
+
+\item{custom.template}{set to true, indicating that the expression template is obtained by custom inputting single cells.}
 
 \item{custom.signature}{set TRUE for custom signature matrix.}
 

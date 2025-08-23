@@ -2,7 +2,7 @@
 % Please edit documentation in R/DECEPTICONx.R
 \name{MuSiC2_base}
 \alias{MuSiC2_base}
-\title{Creat c}
+\title{Creat MuSiC2 base}
 \usage{
 MuSiC2_base(
   sc.sce,
@@ -41,5 +41,5 @@ MuSiC2_base(
 MuSiC2 base
 }
 \description{
-Creat c
+Creat MuSiC2 base
 }

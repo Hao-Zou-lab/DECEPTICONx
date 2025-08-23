@@ -1,59 +1,80 @@
-#########bayesprism############
+#########BayesPrism############
 
-#' @title Creat BayesPrism base
+#' @title Create BayesPrism base
 #'
 #' @param bk.dat is a matrix with rows for gene names and columns for sample names
 #' @param sc.dat is a matrix with rows for gene names and columns for cell names
-#' @param cell.type.labels is an n*2 matrix, the first column is the cell name of sc.dat, and the second column is the cell subtype
+#' @param cell.type.labels is an n*1 matrix, the rowname is the cell name of sc.dat, and the first column is the cell subtype
+#' @param species character string indicating species, defaults to "hs" (human)
+#' @param input.type character string specifying input type, defaults to "count.matrix"
+#' @param gene.group character vector of gene groups to filter
+#' @param gene.type character string specifying gene type, defaults to "protein_coding"
 #'
 #' @return BayesPrism base
 #' @export
 #'
-#' @examples bayes_base(bulk.samples,sc.dat,subtype)
-bayes_base <- function(bk.dat,sc.dat,cell.type.labels,species="hs",input.type="count.matrix",gene.group=c( "Rb","Mrp","other_Rb","chrM","MALAT1","chrX","chrY"),gene.type = "protein_coding"){
+#' @examples BayesPrism_base(bulk.samples, sc.dat, subtype)
+BayesPrism_base <- function(bk.dat, sc.dat, cell.type.labels, species="hs", input.type="count.matrix",
+                       gene.group=c("Rb","Mrp","other_Rb","chrM","MALAT1","chrX","chrY"),
+                       gene.type="protein_coding") {
   library(BayesPrism)
+
+  # Transpose input matrices
   sc.dat = t(sc.dat)
   bk.dat = t(bk.dat)
   cell.type.labels <- t(cell.type.labels)
-  if (species == "hs" || species == "mm") {
-    sc.dat.filtered <- cleanup.genes (input=sc.dat,
-                                      input.type=input.type,
-                                      species=species,
-                                      gene.group=gene.group ,
-                                      exp.cells=1)
-    sc.dat.filtered.pc <- select.gene.type (sc.dat.filtered,
-                                            gene.type = gene.type)
+
+  # Process based on species
+  if (species %in% c("hs", "mm")) {
+    # Human or mouse: apply gene cleanup and selection
+    sc.dat.filtered <- cleanup.genes(input=sc.dat,
+                                     input.type=input.type,
+                                     species=species,
+                                     gene.group=gene.group,
+                                     exp.cells=1)
+    sc.dat.filtered.pc <- select.gene.type(sc.dat.filtered,
+                                           gene.type=gene.type)
   } else {
-    # do something else
+    # Other species: use input as is
     sc.dat.filtered.pc <- sc.dat
   }
+
+  # Create BayesPrism object
   myPrism <- new.prism(
     reference=sc.dat.filtered.pc,
     mixture=bk.dat,
     input.type=input.type,
-    cell.type.labels = cell.type.labels,
-    cell.state.labels = NULL,
+    cell.type.labels=cell.type.labels,
+    cell.state.labels=NULL,
     key=NULL,
     outlier.cut=0.01,
-    outlier.fraction=0.1,
+    outlier.fraction=0.1
   )
-  write.table(t(myPrism@phi_cellState@phi),file = "./custom_signature_matrix/Bayes_base.txt",row.names = TRUE,col.names = TRUE,sep='\t')
-  message("Creat BayesPrism base sucessful!")
-  }
 
-#########monocle3############
+  # Write output
+  write.table(t(myPrism@phi_cellState@phi),
+              file="./custom_signature_matrix/BayesPrism_base.txt",
+              row.names=TRUE,
+              col.names=TRUE,
+              sep='\t')
 
-#' @title Creat monocle3 base
+  message("Created BayesPrism base successfully!")
+}
+
+########Monocle3############
+
+#' @title Creat Monocle3 base
 #'
 #' @param expression_matrix is a matrix with rows for gene names and columns for cell names
 #' @param cell_metadata is an n*2 matrix, the first column is the cell name of sc.dat, and the second column is the cell subtype
 #'
-#' @return monocle3 base
+#' @return Monocle3 base
 #' @export
 #'
 #' @examples monocle3_base <- monocle3_base(sc.dat,subtype)
-monocle3_base <- function(expression_matrix,cell_metadata){
+Monocle3_base <- function(expression_matrix,cell_metadata){
   library(monocle3)
+  cell_metadata <- as.matrix(cell_metadata)
   row.names(cell_metadata) <- colnames(expression_matrix)
   cds <- new_cell_data_set(expression_matrix,
                            cell_metadata = cell_metadata,
@@ -72,11 +93,12 @@ monocle3_base <- function(expression_matrix,cell_metadata){
   cluster_mean_exprs = as.matrix(aggregate_gene_expression(cds,
                                                            cell_group_df = cell_group_df, norm_method = "size_only",
                                                            scale_agg_values = FALSE))
-  write.table(cluster_mean_exprs, './custom_signature_matrix/monocle3_mean_base.txt', sep='\t', row.names= T, col.names= T, quote=F)
-  message("Creat monocle3 base sucessful!")
-  }
+  write.table(cluster_mean_exprs, './custom_signature_matrix/Monocle3_base.txt', sep='\t', row.names= T, col.names= T, quote=F)
+  message("Creat Monocle3 base sucessful!")
+}
+
 #####################################################################
-#' @title Creat c
+#' @title Creat MuSiC2 base
 #'
 #' @param sc.sce is a matrix with rows for gene names and columns for cell names
 #' @param bulk is a matrix with rows for gene names and columns for sample names
@@ -236,12 +258,12 @@ generate_signature_matrix <- function(cell_types) {
 #'
 #' @param bulk.samples is a matrix with rows for gene names and columns for sample names
 #' @param sc.dat is a matrix with rows for gene names and columns for cell names
-#' @param subtype is an n*2 matrix, the first column is the cell name of sc.dat, and the second column is the cell subtype
+#' @param subtype is an n*1 matrix, the rowname is the cell name of sc.dat, and the first column is the cell subtype
 #' @param light set TRUE for light version of DECEPTICON, running time reduced.
-#' @param custom.template
+#' @param custom.template set to true, indicating that the expression template is obtained by custom inputting single cells.
 #' @param custom.signature set TRUE for custom signature matrix.
 #' @param signature.matrix When custom.signature is set to TRUE, need to enter expression template(s).
-#' @param cell_types can enter in nk, b, cd4, cd8, fibroblast, five kinds of macrophage cell types
+#' @param cell_types can enter in nk, b, cd4, cd8, fibroblast, macrophage, six kinds of cell types
 #'
 #' @return
 #' @export
@@ -256,6 +278,7 @@ run_DECEPTICONx <- function (bulk.samples,sc.dat,subtype,cell_types=c("nk","b","
   light = light
   single.cell.data = single.cell.data
   setwd(RUNpath)
+  bulk = read.table(bulk.samples ,row.names = 1,header =  TRUE)
   if (custom.template == FALSE) {
     signature.matrix = generate_signature_matrix(cell_types)
     run_DECEPTICON(bulk.samples = bulk.samples,
@@ -265,14 +288,14 @@ run_DECEPTICONx <- function (bulk.samples,sc.dat,subtype,cell_types=c("nk","b","
                    light = TRUE)
   }
   else {
-    bayes_base(bulk.samples,sc.dat,subtype)
-    monocle3_base <- monocle3_base(sc.dat,subtype)
-    MuSiC2_base(sc.dat,bulk.samples, subtype)
+    BayesPrism_base(bulk,sc.dat,subtype)
+    Monocle3_base <- Monocle3_base(sc.dat,subtype)
+    MuSiC2_base(sc.dat,bulk, subtype)
     run_DECEPTICON(bulk.samples = bulk.samples,
                    RUNpath = RUNpath,
                    custom.signature = TRUE,
-                   signature.matrix = c('./custom_signature_matrix/monocle3_mean_base.txt',
-                                        './custom_signature_matrix/Bayes_base.txt',
+                   signature.matrix = c('./custom_signature_matrix/Monocle3_base.txt',
+                                        './custom_signature_matrix/BayesPrism_base.txt',
                                         './custom_signature_matrix/MuSiC2_base.txt'),
                    light = TRUE)
   }
